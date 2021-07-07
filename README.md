@@ -4,7 +4,7 @@
 <br /><br />
 
 <p align="center"><img align="center" src="https://storage.googleapis.com/saasify-uploads-prod/696e287ad79f0e0352bc201b36d701849f7d55e7.svg" height="96" alt="reacher" /></p>
-<h1 align="center">⚙️ Reacher Backend</h1>
+<h1 align="center">⚙️ Reacher Backend for Talmore</h1>
 <h4 align="center">Backend Server for Reacher Email Verification API: https://reacher.email.</h4>
 
 <br /><br />
