@@ -1,5 +1,5 @@
 // Reacher - Email Verification
-// Copyright (C) 2018-2021 Reacher
+// Copyright (C) 2018-2022 Reacher
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
@@ -37,5 +37,23 @@ pub async fn handle_rejection(err: warp::Rejection) -> Result<impl warp::Reply, 
 		Ok(warp::reply::with_status(warp::reply::json(err), err.code))
 	} else {
 		Err(err)
+	}
+}
+
+/// Catch all error struct
+#[derive(Debug)]
+pub enum ReacherError {
+	Db(sqlx::Error),
+	Csv(),
+	Json(),
+}
+
+// Defaults to Internal server error
+impl reject::Reject for ReacherError {}
+
+// wrap sql errors as db errors for reacher
+impl From<sqlx::Error> for ReacherError {
+	fn from(e: sqlx::Error) -> Self {
+		ReacherError::Db(e)
 	}
 }

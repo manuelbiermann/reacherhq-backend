@@ -14,17 +14,17 @@ This repository holds the backend for [Reacher](https://reacher.email). The back
 -   [`check-if-email-exists`](https://github.com/reacherhq/check-if-email-exists), which performs the core email verification logic,
 -   [`warp`](https://github.com/seanmonstar/warp) web framework.
 
+## ⚠️ Importance Notice: WIP branch
+
+The `master` branch you are viewing now contains Work in Progress code on the [bulk API endpoint](https://github.com/orgs/reacherhq/projects/1). Some beta Docker images are also shipped for early usage. Please note that **the API might change** and the **code is not considered stable or production-ready**. Please use this branch only if you know what you are doing.
+
+For the latest stable realease, please use [v0.3.12](https://github.com/reacherhq/backend/tree/v0.3.12).
+
 ## Get Started
 
-There are 3 ways you can run this backend.
+There are 2 ways you can run this backend.
 
-### 1. One-Click Deploy to Heroku
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/reacherhq/backend)
-
-After clicking on the button, just follow the instructions on screen.
-
-### 2. Use Docker
+### 1. Use Docker
 
 The [Docker image](./Dockerfile) is hosted on Docker Hub: https://hub.docker.com/r/reacherhq/backend.
 
@@ -44,11 +44,12 @@ You can then send a POST request with the following body to `http://localhost:80
 	"proxy": {                        // (optional) SOCK5 proxy to run the verification through, default is empty
 		"host": "my-proxy.io",
 		"port": 1080
-	}
+	},
+	"smtp_port": 587                  // (optional) SMTP port to do the email verification, defaults to 25
 }
 ```
 
-### 3. Run locally
+### 2. Run locally
 
 If you prefer to run the server locally on your machine, just clone the repository and run:
 
@@ -64,11 +65,16 @@ These are the environment variables used to configure the HTTP server:
 
 | Env Var              | Required? | Description                                                                                                       | Default            |
 | -------------------- | --------- | ----------------------------------------------------------------------------------------------------------------- | ------------------ |
+| `DATABASE_URL`     | Yes        | Database connection string for storing results and task queue                                                                | not defined |
 | `RCH_FROM_EMAIL`     | No        | The email to use in the `MAIL FROM:` SMTP command.                                                                | `user@example.org` |
 | `RCH_HTTP_HOST`      | No        | The host name to bind the HTTP server to.                                                                         | `127.0.0.1`        |
 | `PORT`               | No        | The port to bind the HTTP server to, populated by Heroku.                                                         | `8080`             |
 | `RCH_SENTRY_DSN`     | No        | If set, bug reports will be sent to this [Sentry](https://sentry.io) DSN.                                         | not defined        |
 | `RCH_SAASIFY_SECRET` | No        | If set, all requests must have a `x-saasify-proxy-secret` header set, equal to the value of `RCH_SAASIFY_SECRET`. | not defined        |
+| `RUST_LOG`           | No        | One of `trace,debug,warn,error,info`. 💡 PRO TIP: `RUST_LOG=debug` is very handful for debugging purposes.        | not defined                |
+| `RCH_DATABASE_MAX_CONNECTIONS`           | No        | Connections created for the database pool   | 5                |
+| `RCH_MINIMUM_TASK_CONCURRENCY`           | No        | Minimum number of concurrent running tasks below which more tasks are fetched   | 10                |
+| `RCH_MAXIMUM_CONCURRENT_TASK_FETCH`           | No        | Maximum number of tasks fetched at once   | 20                |
 
 ## REST API Documentation
 
@@ -84,7 +90,8 @@ The API basically only exposes one endpoint: `POST /v0/check_email` expecting th
 	"proxy": {                        // (optional) SOCK5 proxy to run the verification through, default is empty
 		"host": "my-proxy.io",
 		"port": 1080
-	}
+	},
+	"smtp_port": 587                  // (optional) SMTP port to do the email verification, defaults to 25
 }
 ```
 
